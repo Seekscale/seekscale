@@ -1,0 +1,16 @@
+version: '2'
+services:
+
+  node:
+    image: 10.8.0.1:5500/ci-celery
+    privileged: true #necessary to mount smb shares inside the container
+    command: celery -A worker worker --loglevel=info -Ofair --concurrency=1
+    environment:
+      - BROKER=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@${MASTER_IP}
+    volumes: #docker in docker so that python tasks can run docker jobs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+    links:
+        - rabbit
+    depends_on:
+        - rabbit
