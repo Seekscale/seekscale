@@ -10,10 +10,17 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
 
+  registry:
+    image: registry:2
+    ports:
+      - "5500:5000"
+    volumes:
+      - ./data-registry:/var/lib/registry
+
   ui:
     #NOTE: we use same image than celery worker because we need worker tasks to be registered with flower
     #, now we use flower api to submit jobs
-    image: 10.8.0.1:5500/ci-celery
+    image: seekscale/seekscale-node-prod:${TAG}
     command: flower -A worker --port=5555 --persistent=True --db=/db/db --broker=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbit
     environment:
       - BROKER=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbit

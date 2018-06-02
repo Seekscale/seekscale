@@ -2,7 +2,7 @@ version: '2'
 services:
 
   node:
-    image: 10.8.0.1:5500/ci-celery
+    image: seekscale/seekscale-node-prod:${TAG}
     privileged: true #necessary to mount smb shares inside the container
     command: celery -A worker worker --loglevel=info -Ofair --concurrency=1
     environment:
